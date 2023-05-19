@@ -18,6 +18,7 @@ CHANNELS = {
     'BLOCK': 'BLOCK'
 }
 
+
 class Listener(SubscribeCallback):
 
     def __init__(self, blockchain):
@@ -36,14 +37,14 @@ class Listener(SubscribeCallback):
                 print('Successfully replaced chain.')
             except Exception as e:
                 print(f'\n Did not replace chain: {e}')
-    
 
 
-class PubSub():
+class PubSub:
     """
     Handles the publish/subscribe layer of the application.
     Provides communication between the nodes of network.
     """
+
     def __init__(self, blockchain):
         self.pubnub = PubNub(pnconfig)
         self.pubnub.subscribe().channels(CHANNELS.values()).execute()
@@ -69,6 +70,6 @@ def main():
 
     pubsub.publish(CHANNELS['TEST'], {'foo': 'bar'})
 
+
 if __name__ == '__main__':
     main()
-
