@@ -55,7 +55,7 @@ class Blockchain:
         Deserialize a list of serialzed blocks into a blockchain instance.
         """
         blockchain = Blockchain()
-        blockchain.chain = list(map(lambda block_json: Block.from_json(block_json)), chain_json)
+        blockchain.chain = list(map(lambda block_json: Block.from_json(block_json), chain_json))
         return blockchain
 
     @staticmethod

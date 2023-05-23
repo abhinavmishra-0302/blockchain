@@ -10,15 +10,15 @@ class Transactions:
     more recipients.
     """
 
-    def __init__(self, sender_wallet, recipient, amount):
-        self.id = str(uuid.uuid4())[0:8]
-        self.output = self.create_output(
+    def __init__(self, sender_wallet=None, recipient=None, amount=None, id=None, output=None, input=None):
+        self.id = id or str(uuid.uuid4())[0:8]
+        self.output = output or self.create_output(
             sender_wallet,
             recipient,
             amount
         )
 
-        self.input = self.create_input(sender_wallet, self.output)
+        self.input = input or self.create_input(sender_wallet, self.output)
 
     def create_output(self, sender_wallet, recipient, amount):
         """
@@ -56,7 +56,6 @@ class Transactions:
 
         if recipient in self.output:
             self.output[recipient] = self.output[recipient] + amount
-
         else:
             self.output[recipient] = amount
 
@@ -64,13 +63,22 @@ class Transactions:
 
         self.input = self.create_input(sender_wallet, self.output)
 
-
     def to_json(self):
         """
         Serialize the transaction.
         """
 
         return self.__dict__
+
+    def from_json(transaction_json):
+        """
+        Deserialize a transaction's json representation back into Transaction instance
+        """
+        return Transactions(
+            id=transaction_json['id'],
+            output=transaction_json['output'],
+            input=transaction_json['input']
+        )
 
     @staticmethod
     def is_valid_transaction(transaction):
