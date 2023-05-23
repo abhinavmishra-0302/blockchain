@@ -22,3 +22,14 @@ class TransactionPool:
         json serialized form
         """
         return list(map(lambda transaction: transaction.to_json(), self.transaction_map.values()))
+
+    def clear_blockchain_transactions(self, blockchain):
+        """
+        Delete a blockchain recorded transactions from the transaction pool.
+        """
+        for block in blockchain:
+            for transaction in block.data:
+                try:
+                    del self.transaction_map[transaction['id']]
+                except KeyError:
+                    pass
