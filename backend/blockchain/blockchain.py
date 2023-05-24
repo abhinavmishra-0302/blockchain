@@ -1,4 +1,7 @@
 from backend.blockchain.block import Block
+from backend.config.config import MINING_REWARD_INPUT
+from backend.wallet.transactions import Transactions
+from backend.wallet.wallet import Wallet
 
 
 class Blockchain:
@@ -74,6 +77,52 @@ class Blockchain:
             block = chain[i]
             last_block = chain[i - 1]
             Block.is_valid_block(last_block, block)
+
+        Blockchain.is_valid_transaction_chain(chain)
+
+    @staticmethod
+    def is_valid_transaction_chain(chain):
+        """
+        Enforce the rules of a chain composed of blocks of transactions.
+          - Each transaction must appear only once in the chain.
+          - There can be only one mining reward per block.
+          - Each transaction must be valid.
+        """
+        transaction_ids = set()
+
+        for i in range(len(chain)):
+
+            blocks = chain[i]
+            has_mining_reward = False
+
+            for transaction_json in blocks.data:
+                transaction = Transactions.from_json(transaction_json)
+
+                if transaction.id in transaction_ids:
+                    raise Exception(f'Transaction {transaction.id} is not unique.')
+
+                transaction_ids.add(transaction.id)
+
+                if transaction.input == MINING_REWARD_INPUT:
+
+                    if has_mining_reward:
+                        raise Exception(
+                            f'There can only be one mining reward per block. Check block with hash: {blocks.hash}')
+
+                    has_mining_reward = True
+                else:
+                    historic_blockchain = Blockchain()
+                    historic_blockchain.chain = chain[0:i]
+
+                    historic_balance = Wallet.calculate_balance(
+                        historic_blockchain,
+                        transaction.input['address']
+                    )
+
+                    if historic_balance != transaction.input['amount']:
+                        raise Exception(f'Transaction {transaction.id} has an invalid input amount')
+
+                Transactions.is_valid_transaction(transaction)
 
 
 def main():

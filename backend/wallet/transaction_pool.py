@@ -27,7 +27,7 @@ class TransactionPool:
         """
         Delete a blockchain recorded transactions from the transaction pool.
         """
-        for block in blockchain:
+        for block in blockchain.chain:
             for transaction in block.data:
                 try:
                     del self.transaction_map[transaction['id']]
