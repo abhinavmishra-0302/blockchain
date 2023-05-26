@@ -3,6 +3,7 @@ import random
 
 import requests
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 from backend.blockchain.blockchain import Blockchain
 from backend.pubsub import PubSub
@@ -11,6 +12,7 @@ from backend.wallet.wallet import Wallet
 from backend.wallet.transaction_pool import TransactionPool
 
 app = Flask(__name__)
+CORS(app, resources={r'/*': {'origins': 'http://localhost:3000'}})
 blockchain = Blockchain()
 wallet = Wallet(blockchain)
 transaction_pool = TransactionPool()
@@ -50,9 +52,7 @@ def route_wallet_transact():
     transaction = transaction_pool.existing_transaction(wallet.address)
 
     if transaction:
-        transaction.update(
-            wallet, transaction_data['recipient'], transaction_data['amount']
-        )
+        transaction.update(wallet, transaction_data['recipient'], transaction_data['amount'])
     else:
         transaction = Transactions(wallet, transaction_data['recipient'], transaction_data['amount'])
 
