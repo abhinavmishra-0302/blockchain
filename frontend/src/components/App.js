@@ -1,8 +1,7 @@
 import React, {useState, useEffect} from "react";
 import logo from "../assets/logo.png"
 import {API_BASE_URL} from "../config";
-
-import Blockchain from "./Blockchain";
+import {Link} from "react-router-dom";
 
 function App() {
 
@@ -22,12 +21,12 @@ function App() {
             Welcome to PyChain
         </h3>
         <br/>
+        <Link to="/blockchain">Blockchain</Link>
+        <Link to="/conduct-transaction">Conduct a Transaction</Link>
         <div className="WalletInfo">
             <div>Address: {address}</div>
             <div>Balance: {balance}</div>
         </div>
-        <br/>
-        <Blockchain/>
     </div>);
 }
 
