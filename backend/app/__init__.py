@@ -36,9 +36,11 @@ def route_blockchain_range():
 
     return jsonify(blockchain.to_json()[::-1][start:end])
 
+
 @app.route('/blockchain/length')
 def route_blockchain_length():
     return jsonify(len(blockchain.chain))
+
 
 @app.route('/blockchain/mine')
 def route_blockchain_mine():
@@ -77,6 +79,22 @@ def route_wallet_info():
     return jsonify({'address': wallet.address, 'balance': wallet.balance})
 
 
+@app.route('/known-addresses')
+def route_know_addresses():
+    known_addresses = set()
+
+    for block in blockchain.chain:
+        for transaction in block.data:
+            known_addresses.update(transaction['output'].keys())
+
+    return jsonify(list(known_addresses))
+
+
+@app.route('/transactions')
+def route_transactions():
+    return jsonify(transaction_pool.transaction_data())
+
+
 ROOT_PORT = 5000
 PORT = ROOT_PORT
 
@@ -96,6 +114,9 @@ if os.environ.get('PEER') == 'True':
 if os.environ.get('SEED_DATA') == 'True':
     for i in range(10):
         blockchain.add_block([Transactions(Wallet(), Wallet().address, random.randint(2, 50)).to_json(),
-            Transactions(Wallet(), Wallet().address, random.randint(2, 50)).to_json(), ])
+                              Transactions(Wallet(), Wallet().address, random.randint(2, 50)).to_json(), ])
+
+    for i in range(3):
+        transaction_pool.set_transaction(Transactions(Wallet(), Wallet().address, random.randint(2, 50)))
 
 app.run(port=PORT)
